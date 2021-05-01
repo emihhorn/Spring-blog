@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="partials/head :: head" />
+<body>
+<nav th:replace="partials/navbar :: navbar" />
+<div class="container text-center">
+    <h3>Pick a number</h3>
+    <h3>If the dice roll matches your number you win!</h3>
+    <form action="/roll-dice" method="get">
+        <a class="btn btn-primary" th:href="@{/roll-dice/1}" role="button">1</a>
+        <a class="btn btn-primary" th:href="@{/roll-dice/2}" role="button">2</a>
+        <a class="btn btn-primary" th:href="@{/roll-dice/3}" role="button">3</a>
+        <a class="btn btn-primary" th:href="@{/roll-dice/4}" role="button">4</a>
+        <a class="btn btn-primary" th:href="@{/roll-dice/5}" role="button">5</a>
+        <a class="btn btn-primary" th:href="@{/roll-dice/6}" role="button">6</a>
+        <div th:if${isCorrect}>
+            <h5><span th:text="${correctRoll}"></span> </h5>
+            <h5><span th:text="${incorrectRoll}"></span> </h5>
+        </div>
+    </form>
+</div>
+<footer th:replace="partials/footer :: footer" />
+</body>
+</html>
