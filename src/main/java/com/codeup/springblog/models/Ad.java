@@ -1,11 +1,11 @@
 package com.codeup.springblog.models;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-public class Ads {
+@Entity
+@Table(name = "ads")
+
+public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -17,4 +17,54 @@ public class Ads {
     private String description;
 
     private int priceInCents;
+
+    public Ad(long id, String title, String description, int priceInCents) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.priceInCents = priceInCents;
+    }
+
+    public Ad() {
+
+    }
+
+    public Ad( String title, String description, int priceInCents) {
+        this.title = title;
+        this.description = description;
+        this.priceInCents = priceInCents;
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getPriceInCents() {
+        return priceInCents;
+    }
+
+    public void setPriceInCents(int priceInCents) {
+        this.priceInCents = priceInCents;
+    }
 }
