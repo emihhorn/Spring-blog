@@ -1,7 +1,11 @@
 package com.codeup.springblog.controller;
 
 import com.codeup.springblog.models.Post;
+import com.codeup.springblog.models.User;
 import com.codeup.springblog.repositories.PostRepository;
+import com.codeup.springblog.repositories.UserRepo;
+import com.codeup.springblog.services.EmailSvc;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +14,13 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostRepository postsDao;
+    private final UserRepo usersDao;
+    private final EmailSvc emailSvc;
 
-    public PostController(PostRepository postsDao) {
+    public PostController(PostRepository postsDao, UserRepo usersDao, EmailSvc emailSvc) {
         this.postsDao = postsDao;
+        this.usersDao = usersDao;
+        this.emailSvc = emailSvc;
     }
 
     @GetMapping("/posts")
@@ -37,19 +45,8 @@ public class PostController {
     }
 
     @PostMapping("/posts/{id}/edit")
-    public String update(
-            @PathVariable long id,
-            @RequestParam String title,
-            @RequestParam String body) {
-
-        Post postToUpdate = new Post(
-                id,
-                title,
-                body
-        );
-
-        postsDao.save(postToUpdate);
-
+    public String update(@ModelAttribute Post post) {
+        postsDao.save(post);
         return "redirect:/posts";
     }
 
@@ -59,16 +56,21 @@ public class PostController {
         return "redirect:/posts";
     }
 
+
     @GetMapping("/posts/create")
-    @ResponseBody
-    public String create() {
-        return "Here is a view to create a new post...";
+    public String create(Model vModel) {
+        vModel.addAttribute("post", new Post());
+        return "posts/create";
     }
 
     @PostMapping("/posts/create")
-    @ResponseBody
-    public String insert() {
-        return "Saving a new post...";
+    public String insert(@ModelAttribute Post post) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User author = usersDao.getOne(principal.getId());
+        post.setUser(author);
+        Post savedPost = postsDao.save(post);
+        emailSvc.prepareAndSend(post, "Post Created!", "You have just created a post!");
+        return "redirect:/posts/" + savedPost.getId();
     }
 
 }
